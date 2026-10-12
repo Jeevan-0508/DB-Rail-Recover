@@ -1,0 +1,6 @@
+{
+  "name": "railrecover", "version": "0.1.0", "private": true,
+  "description": "Evidence-led railway lost-property operational prototype",
+  "type": "module", "engines": { "node": ">=22" },
+  "scripts": { "start": "node server.mjs", "test": "node --test", "check": "node --check server.mjs && node --check domain.mjs && node --check public/app.js" }
+}
