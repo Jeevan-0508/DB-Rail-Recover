@@ -1,4 +1,4 @@
-import { seed, createCase, registerItem, candidates, act, publicState } from './domain.mjs';
+import { seed, createCase, registerItem, candidates, act, publicState } from '../domain.mjs';
 const key='railrecover-pages-v1';
 export function browserApi(path,input) {
   let db;
