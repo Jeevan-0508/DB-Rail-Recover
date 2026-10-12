@@ -2,123 +2,122 @@
 
 # ↗ RailRecover
 
-### A lost item shouldn't mean a lost trail.
+### One request. Shared answers.
 
-**An operational prototype that turns a railway loss report into an accountable search and a verified return.**
+**A route-based search coordination prototype: relevant railway teams respond, and every desk sees the same case.**
 
-[Explore the demo](https://Jeevan-0508.github.io/DB-Rail-Recover/) · [Case study](docs/CASE_STUDY.md) · [Pilot proposal](docs/PILOT_PROPOSAL.md)
+[Open the live demo](https://Jeevan-0508.github.io/DB-Rail-Recover/) · [Case study](docs/CASE_STUDY.md) · [Operator pilot](docs/PILOT_PROPOSAL.md)
 
 ![Tests and deployment](https://github.com/Jeevan-0508/DB-Rail-Recover/actions/workflows/pages.yml/badge.svg)
 ![Node 22+](https://img.shields.io/badge/Node-22%2B-174d40)
-![Licence MIT](https://img.shields.io/badge/Licence-MIT-72994f)
+![MIT](https://img.shields.io/badge/Licence-MIT-72994f)
 
-![RailRecover illustrated product overview](docs/assets/overview.svg)
+![Illustrated shared-search workflow](docs/assets/overview.svg)
 
-*Illustrated product overview. Independent project, synthetic data, no affiliation with Deutsche Bahn.*
+*Independent concept. Illustrated product overview. Synthetic data and journeys. No affiliation with Deutsche Bahn.*
 
 </div>
 
-## The problem in one minute
+## The situation we want to change
 
-You leave a laptop bag on a train. You report it immediately. But can you tell whether anyone has checked the train, who owns the search, or when to expect the next update?
+A passenger leaves a laptop bag on a train and reports it. At a station the next morning, they are told to wait at least three days and cannot obtain an answer about checks at other stations.
 
-DB already has loss reporting and inventory matching. **RailRecover explores the gap before an item is registered:** accountable search tasks, evidence-backed updates and visible custody handovers. It does not claim that DB has no internal communication infrastructure.
+That is the passenger's reported experience, **not a verified universal DB policy**. The proposed improvement is concrete: a desk should be able to open the report and say **“Hamburg recorded a possible matching bag; here is the location and verification status”**, rather than having no shared response to consult.
 
-Inspired by an anonymised passenger account in Nürnberg. The broader gap is a hypothesis to validate with operators, not an established finding about the entire railway network.
+## A shared search, not another lost-property database
 
-## How recovery works
+DB already has NovaFind reporting, matching, notifications, storage workflows and internal history. RailRecover does not claim to invent those functions or prove that DB lacks internal coordination.
 
-```mermaid
-flowchart TD
-    Report[Passenger submits report] --> Task[Team acknowledges search]
-    Task --> Check{Item located?}
-    Check -->|No| Waiting[Report stays open for later inventory]
-    Check -->|Candidate| Review[Staff review candidate]
-    Waiting --> Review
-    Review --> Proof{Ownership evidence matches?}
-    Proof -->|No| Waiting
-    Proof -->|Yes| Reserve[Reserve item to verified case]
-    Reserve --> Custody[Record accepted custody handover]
-    Custody --> Return[Confirm collection and close case]
-```
+We propose a coordination layer **before or alongside inventory registration**: one report produces tasks for relevant teams, each response has an actor, time and check scope, and every participating desk can inspect the results. Production would reference the existing DB report and inventory rather than duplicate them.
 
-**A match is a candidate. Acknowledgment is not recovery. A negative train check does not close the report.**
-
-## Two views, one evidence trail
-
-| Passenger portal | Operations desk |
-| --- | --- |
-| Submit a fictional loss report | Accept an assigned search task |
-| See the assigned team and deadline | Record a check or escalate an overdue task |
-| Follow timestamped progress | Register found items and review candidates |
-| See verified storage and return status | Verify ownership and record custody/collection |
-
-The case-study view explains the incident, verified process facts and the proposed pilot.
-
-## Try the demo in five minutes
-
-Open **[RailRecover on GitHub Pages](https://Jeevan-0508.github.io/DB-Rail-Recover/)** once its deployment succeeds.
-
-1. Open the sample backpack report in **Passenger portal**.
-2. Switch to **Operations desk**, select that case and **Acknowledge search**.
-3. **Link for human review** on the sample backpack.
-4. Choose **Verify ownership**. Try an incorrect detail first; the item remains withheld.
-5. Enter the fictional sample detail **Blue spiral notebook**.
-6. Record an accepted handover to **Demo collection desk**.
-7. Confirm simulated collection. Return to the passenger view to inspect the timeline.
-
-Alternative: record **No item found** after acknowledgment. The report stays open for a later match. Register another fictional found item to explore candidate ranking.
-
-## What makes this more than a form
-
-| Control | Behaviour |
-| --- | --- |
-| Separate task and case states | A completed search can leave the loss report open |
-| Explained matching | Category, train label, date and colour produce a transparent relevance score |
-| Ownership gate | A high score never proves ownership |
-| Reservation | Two cases cannot verify against the same reserved item |
-| Custody gate | Collection requires a recorded accepted handover |
-| Audit timeline | Actions, outcomes and timestamps remain visible |
-| Overdue escalation | Unacknowledged tasks can be escalated after the demo deadline |
-
-No fabricated recovery rates, financial savings or accuracy claims.
-
-## Architecture: live demo and local backend
+## Request → teams → shared answer
 
 ```mermaid
 flowchart TD
-    UI[Passenger and operations interface] --> Mode{Deployment mode}
-    Mode -->|GitHub Pages| Browser[Browser demo adapter]
-    Browser --> Rules[Shared transition and matching rules]
-    Rules --> Storage[Browser local storage]
-    Mode -->|Local Node server| API[HTTP API]
-    API --> Domain[Same domain rules]
-    Domain --> Disk[Atomic JSON persistence]
-    API --> Events[Timestamped evidence and custody records]
+    P[Passenger loss report] --> C[Shared case and journey confirmation]
+    C --> T[Relevant team tasks]
+    T --> B[Onboard team]
+    T --> S[Remaining station desks]
+    T --> D[Destination cleaning or depot team]
+    B --> R[Individual responses with time and check scope]
+    S --> R
+    D --> R
+    R --> V[Shared case visible from every desk]
+    V --> F{Possible item found?}
+    F -->|Yes| O[Existing ownership and collection process]
+    F -->|No or pending| W[Keep report open and show remaining checks]
 ```
 
-| | GitHub Pages | Local server |
+Notify relevant teams, not every station in Germany. The destination team is included even when the passenger exits at the final stop. A station inventory check is different from a physical train sweep; the task identifies the intended scope.
+
+## What each team reports
+
+| Status | What it means | What it does not mean |
 | --- | --- | --- |
-| Purpose | Public interactive demonstration | Backend workflow prototype |
-| Persistence | This browser only | Local JSON file across restarts |
-| Rules | Run in the browser | Enforced by the server |
-| Private sample details | Inspectable by a browser user; no security boundary | Omitted from API read responses |
-| Real operator integration | None | None |
+| **Pending** | A local demo task exists; acknowledgment pending | A real message was delivered |
+| **Accepted** | A demo team accepted the task | The bag was located |
+| **Checked — not found** | A specified place was checked at a recorded time | The bag is permanently missing |
+| **Found** | A registered item reference and storage location are available | The claimant owns it or can collect yet |
+| **Unable to check** | A reason is recorded | The report is closed |
 
-Both modes are synthetic demos. The view switch is not authentication. Never enter real personal, employer or device secrets.
+One negative response never replaces other pending responses. Even if every team reports a negative or unavailable check, the loss case stays open for later discoveries.
+
+## See the Hamburg → Nürnberg example
+
+1. [Open the demo](https://Jeevan-0508.github.io/DB-Rail-Recover/). The fictional backpack case already has five tasks: onboard, Würzburg, Hannover, Hamburg, and a Hamburg terminal team.
+2. Choose **Operations desk** and set **View from desk → Hamburg Hbf**.
+3. Open the backpack case → **Accept task** → **Record response**.
+4. Choose **Found**, select the sample backpack and enter **“Checked the local found-item inventory; matching bag held here.”**
+5. Change **View from desk → Nürnberg Hbf**. Nürnberg has no remaining-route search task, but it can read Hamburg's response and the recorded storage location.
+6. Open **Passenger portal** and the same case. The location and individual team responses are also visible there.
+7. To demonstrate collection, return to Hamburg / All desks → **Review ownership candidate** → **Verify ownership** with the fictional detail **Blue spiral notebook** → record a handover → confirm collection.
+
+No one has to perform every step to demonstrate the main value. Steps 1–6 prove the shared visibility concept.
+
+## The passenger and staff views
+
+| Passenger | Relevant team | Any service desk |
+| --- | --- | --- |
+| Submit item, journey and optional report reference | Accept its own simulated task | Open the shared report |
+| See which teams are pending or have responded | Record found, checked-negative or unavailable | See all team responses and check times |
+| See possible item location and verification state | Link an existing demo inventory item | Explain where the item is recorded |
+| Understand what remains unknown | Escalate overdue tasks | Avoid treating silence as a negative result |
+
+The desktop selector simulates different desks; it is not authentication. Every visitor works with synthetic records.
+
+## Urgent essentials
+
+An **Urgent essentials** context uses illustrative targets of 15 minutes to acknowledge and 30 minutes to respond after acceptance. Standard demo targets are 30 and 60 minutes. Overdue pending or accepted tasks can be manually escalated.
+
+These are proposed demo settings, **not DB commitments or recovery guarantees**. A real operator must agree capacity, priority eligibility and response targets. For medically essential items, seek replacement assistance while recovery continues.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    UI[Passenger and shared-desk interface] --> Mode{Deployment}
+    Mode -->|GitHub Pages| Browser[Browser simulation adapter]
+    Mode -->|Local Node| API[HTTP API]
+    Browser --> Rules[Shared coordination and ownership rules]
+    API --> Rules
+    Rules --> Tasks[Independent team tasks and responses]
+    Rules --> Items[Demo inventory references]
+    Rules --> Events[Shared evidence timeline]
+    Browser --> Local[Browser local storage]
+    API --> Disk[Atomic local JSON persistence]
+```
+
+**Pages:** interactive demo, local to each browser; all fictional evidence is inspectable in browser storage. **Node:** same domain rules enforced through an HTTP API, with persistent local records and private inventory details omitted from read responses. Neither mode sends tasks to real railway teams or connects to DB.
 
 ## Run locally
 
-Requires **Node.js 22+**. No packages, keys or installation are needed.
+Node.js **22+**. No dependencies or keys required.
 
 ```powershell
-# From the project directory on Windows
 npm.cmd start
 ```
 
-Open **http://127.0.0.1:3000** and keep the terminal open.
-
-On macOS/Linux, use `npm start`. `PORT` changes the port; `RAILRECOVER_DATA_DIR` changes the storage directory. The server binds to localhost by default.
+Open **http://127.0.0.1:3000**. On macOS/Linux use `npm start`.
 
 ```sh
 npm test
@@ -126,61 +125,41 @@ npm run check
 npm run build
 ```
 
-Eight tests cover verification and custody gates, negative searches, evidence withholding, double claims, escalation, invalid input, the HTTP workflow with restart persistence, and the built Pages demo workflow. `npm run build` produces the static Pages demo in `dist/`.
+**11 tests** cover route recipient selection, partial/negative/unavailable responses, found-item references, acknowledgment and escalation gates, ownership and custody requirements, double claims, validation, API persistence, and the built Pages adapter.
 
-## Deploy with GitHub Pages
+`PORT` changes the port; `RAILRECOVER_DATA_DIR` changes local storage. Demo data is ignored by Git. Pages uses a fresh v2 storage namespace for this release. Legacy local records gain illustrative tasks when loaded; this does not reconstruct historical searches.
 
-The [deployment workflow](.github/workflows/pages.yml) tests, checks and builds the project before publishing.
+## Research boundary
 
-Repository owner setup: **Settings → Pages → Build and deployment → Source → GitHub Actions**. Then run the workflow from **Actions → Test and deploy RailRecover → Run workflow**, or push a commit to `main`.
-
-Expected address: `https://Jeevan-0508.github.io/DB-Rail-Recover/`. A link alone does not confirm a successful deployment; check the workflow's result.
-
-## Research, not assumptions dressed as facts
-
-| Verified public baseline | Product implication |
+| Established publicly | Still needs operator validation |
 | --- | --- |
-| DB has online reports and found-item matching | Complement existing inventory workflows |
-| Items can take hours or 1–2 days to reach the service | Distinguish intake from physical recovery |
-| End-of-journey finds usually go to the destination office | Investigate journey-linked routing |
-| Uncollected items move to Wuppertal after seven days | Make custody transfers traceable |
-| SBB offers a conditional express search | Explore an early-search pilot with staffing constraints |
+| DB has reporting, matching and successful-find notifications | Automatic physical-search dispatch from an online report |
+| NovaFind supports history, roles, mobile preregistration and storage workflows | Exact DB early-search team routing and acceptance procedure |
+| DB has station coordination infrastructure | Passenger-visible early-check outcomes and escalation |
+| Items may reach the service after hours or 1–2 days | Feasible deadlines and cross-team access policies |
 
-Sources and limitations: **[full case study](docs/CASE_STUDY.md)**. Research snapshot: 12 October 2026. The reported three-working-day wait is not verified as a universal DB rule.
+[Research and sources](docs/CASE_STUDY.md). Do not present a missing public description as proof of a missing internal capability.
 
-## A path to operator adoption
+## Path to an operator pilot
 
 ```mermaid
 flowchart TD
-    Evidence[Validate incident and current process] --> Discovery[Operator discovery and staff interviews]
-    Discovery --> Shadow[Supervised shadow-mode trial]
-    Shadow --> Review{Security, privacy and staffing approved?}
-    Review -->|Yes| Pilot[Bounded operational pilot]
-    Review -->|Needs revision| Discovery
-    Pilot --> Evaluate[Measure workload, updates and recovery outcomes]
+    Validate[Validate current DB procedure] --> Map[Confirm journeys and team ownership]
+    Map --> Shadow[Supervised shadow-mode tasks]
+    Shadow --> Gate{Staffing, privacy and security approved?}
+    Gate -->|Yes| Pilot[Bounded operational pilot]
+    Gate -->|Revise| Map
+    Pilot --> Measure[Measure response visibility and staff workload]
 ```
 
-Proposed initial stakeholders: DB InfraGO lost-property operations and DB Fernverkehr. No contact, endorsement or adoption has been secured. The next step is a process-validation conversation, not unsupervised deployment with passenger data.
+Start with DB InfraGO lost-property operations and DB Fernverkehr as proposed stakeholders. No endorsement, integration access or submission has been obtained. Production needs staff identity, passenger access isolation, operator-confirmed journeys, actual notification delivery and a transactional task service. [Pilot proposal](docs/PILOT_PROPOSAL.md).
 
-**[Read the pilot proposal](docs/PILOT_PROPOSAL.md)** for scope, questions, evaluation and handover options.
+## Repository guide
 
-## Scope and roadmap
+- [Case study and existing-system comparison](docs/CASE_STUDY.md)
+- [Coordination architecture and production requirements](docs/ARCHITECTURE.md)
+- [Pilot scope and evaluation](docs/PILOT_PROPOSAL.md)
+- [Domain and integration tests](test/)
+- [Deployment workflow](.github/workflows/pages.yml)
 
-| Available now | Required for a real operator pilot |
-| --- | --- |
-| Responsive UI and complete synthetic workflow | Passenger accounts, staff SSO and object-level access control |
-| Deterministic matching | Validated journey instances, overnight trips and actual team routing |
-| Manual escalation and on-screen updates | Agreed deadlines, background workers and email/SMS delivery |
-| Demo custody records | Independent sender/receiver identities and accepted transfers |
-| Local JSON persistence | Transactional database, backups and secure hosting |
-| Application audit events | Access auditing and tamper-resistant records |
-| Private-detail check | Operator-approved ownership evidence and dispute handling |
-
-## Explore the repository
-
-- **[Case study](docs/CASE_STUDY.md)** — incident, gap hypothesis and primary sources
-- **[Architecture](docs/ARCHITECTURE.md)** — domain model, transitions and production requirements
-- **[Pilot proposal](docs/PILOT_PROPOSAL.md)** — how to evaluate this with an operator
-- **[Tests](test/)** — safeguards and backend integration verification
-
-Built by **Jeevan** · [MIT licence](LICENSE) · Independent concept, not an official railway service.
+Built by **Jeevan** · [MIT licence](LICENSE) · Independent operational prototype.

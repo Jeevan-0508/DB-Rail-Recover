@@ -1,9 +1,11 @@
 import { seed, createCase, registerItem, candidates, act, publicState } from '../domain.mjs';
-const key='railrecover-pages-v1';
+const key='railrecover-pages-v2';
 export function browserApi(path,input) {
   let db;
   try { db=JSON.parse(localStorage.getItem(key)) || seed(); }
   catch { db=seed(); }
+  // Persist generated team IDs before the first read so subsequent actions address the same tasks.
+  localStorage.setItem(key,JSON.stringify(db));
   if(input===undefined){
     if(path==='/api/state')return publicState(db);
     const c=db.cases.find(c=>c.id===path.split('/')[3]);

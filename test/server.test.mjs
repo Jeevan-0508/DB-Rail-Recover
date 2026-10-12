@@ -21,8 +21,8 @@ test('HTTP workflow persists, rejects invalid actions and withholds evidence',as
   let r=await call('/api/state');assert.ok(!JSON.stringify(r.data).includes('Blue spiral notebook'));
   const id=r.data.cases[0].id,route=`/api/cases/${id}/actions`;
   assert.equal((await call(route,{action:'return',confirm:true})).status,400);
-  assert.equal((await call(route,{action:'acknowledge'},{Origin:'https://unrelated.example'})).status,403);
-  assert.equal((await call(route,{action:'acknowledge'})).status,200);
+  assert.equal((await call(route,{action:'team-ack',taskId:r.data.cases[0].searchTasks[0].id},{Origin:'https://unrelated.example'})).status,403);
+  assert.equal((await call(route,{action:'team-ack',taskId:r.data.cases[0].searchTasks[0].id})).status,200);
   await call(route,{action:'match',itemId:'FI-DEMO-01'});
   assert.equal((await call(route,{action:'verify',evidence:'wrong'})).data.verificationFailed,true);
   await call(route,{action:'verify',evidence:'Blue spiral notebook'});

@@ -1,48 +1,42 @@
-# RailRecover: proposed operator discovery and pilot
+# Proposed pilot: shared route-search responses
 
-## Purpose
+## Ask
 
-Explore whether accepted search tasks and evidence-based passenger updates can reduce uncertainty before railway lost property is registered. Complement an existing lost-property service; do not create a competing inventory without an agreed integration model.
+Validate whether an existing loss report can be linked to accepted early-search tasks across relevant teams, with factual responses visible at participating desks and to the passenger.
 
-## Proposed stakeholders
+Complement DB's existing NovaFind/reporting/inventory infrastructure. Do not propose a replacement matching database. No official adoption, contact or integration agreement has been obtained.
 
-DB InfraGO lost-property operations and DB Fernverkehr are initial stakeholders to investigate, based on the published responsibilities of DB's lost-property service. Station operations, onboard staffing, information security, privacy and accessibility teams would also need involvement. These are proposed recipients, not confirmed contacts or an established submission route.
+## Discovery first
 
-RailRecover is independently developed. No endorsement or adoption has been obtained. Do not describe it as an official DB service or send it in the developer's name without explicit authorisation.
+Proposed stakeholders: DB InfraGO lost-property and station operations, DB Fernverkehr onboard operations, terminal cleaning/depot coordination, and the existing software provider where appropriate. Recipient identities and submission routes must be verified before contact.
 
-## Suggested sequence
+Confirm:
 
-1. Validate a current business-development or innovation contact from official operator sources.
-2. Share a short anonymised case, a five-minute synthetic demonstration and this discovery proposal.
-3. Ask for a process-validation conversation with lost-property and station/onboard operations.
-4. Agree whether early search is practical, who owns it, and which data/integrations are available.
-5. Run a supervised shadow-mode trial: staff compare suggested routing and statuses with actual operations; no automatic dispatch or passenger promises.
-6. Move to a limited operational pilot only after privacy, security, service targets and integration responsibilities are approved.
+1. How can a loss report currently trigger an onboard or terminal check?
+2. Which team receives it, accepts responsibility and records a result?
+3. Which outcomes can another station desk and the passenger inspect?
+4. What is already available in NovaFind or other operational systems?
+5. Which remaining-route stations can meaningfully check inventory, and who can physically inspect the train?
+6. What does an urgent essentials request require, and what can be promised within staffing constraints?
 
-## Proposed bounded scope
+## Bounded trial
 
-One operator, one station/team pairing and a small agreed set of staffed journeys, during staffed hours. Scope and duration must be chosen with the operator. All real data stays in operator-approved infrastructure. The local demo is not that infrastructure.
+One operator, a confirmed journey group, staffed teams and an agreed period. Begin in shadow mode with synthetic/redacted data and no automatic dispatch. Compare a proposed shared-response record with real operational handling.
 
-## What we can provide now
+An actual trial would send only to confirmed responsible teams, not all German stations. Tasks record delivery, acceptance, check scope, response and reason for inability. The existing operator system remains authoritative for identity, inventory and collection.
 
-- A reproducible synthetic workflow and runnable source
-- Research evidence and explicit assumptions
-- State-transition and ownership-control tests
-- A map of production gaps and an evaluation plan
+## Demonstration
 
-## Questions for the operator
+Hamburg demo team records Found and a location. Nürnberg desk opens the same case without owning the search task. The passenger sees the outcome alongside unresolved tasks. Negative checks do not close the report. Ownership is separately verified before collection.
 
-- How are urgent searches requested today, and who can accept them?
-- What constraints prevent or delay onboard/terminal checks?
-- How long does found-item registration take, and what causes variation?
-- Which system owns the case, inventory, custody and passenger communications?
-- Which lawful, minimum data can be exchanged between teams?
-- What measurable outcome would justify a pilot?
+## Readiness gate
 
-## Evaluation
+Staff SSO; passenger access isolation; lawful and minimum cross-team data sharing; confirmed routing/rosters; actual delivery receipts; capacity-based deadlines; safe collection verification; operator-approved urgent-item policy; security and privacy review; transactional storage; maintenance and incident-response owner.
 
-Agree a baseline and success criteria before the trial. Compare acknowledgment times, unowned/overdue tasks, update completeness, inventory latency, match errors, staff workload and passenger understanding. Recovery-rate or financial-benefit claims need actual pilot evidence.
+## Measure
 
-## Handover options
+Acknowledgment/response times, unresponded and unavailable checks, completeness of evidence, percentage of desk enquiries answered from shared records, passenger understanding and staff workload. Define targets against an operator baseline. No recovery guarantees or invented impact metrics.
 
-MIT source can be reused. Production adoption still requires a named operator owner, secure deployment, integration agreements, ongoing maintenance and a support/incident-response plan. Alternatives include an operator-hosted pilot, a licensed implementation with support, or partnership with an existing lost-property software provider. These are commercial/operational options, not promised procurement routes.
+## Adoption
+
+MIT source is reusable. Options include an operator-hosted implementation or an extension developed with the incumbent supplier. The project is a discussion-ready demonstration, not deployment-ready railway software.

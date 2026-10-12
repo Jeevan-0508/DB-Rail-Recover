@@ -1,48 +1,50 @@
-# Architecture
+# Route-based shared search coordination — v0.3
 
-## Implemented v0.1
+## Implemented
 
-Browser (HTML/CSS/ES modules) → Node HTTP API → domain transition rules → single-process JSON store.
+Browser interface → browser adapter or local Node API → coordination and ownership rules → browser storage or atomic JSON store.
 
-The API serializes mutations and atomically replaces the persisted file. Failed transitions are discarded. State reads and match responses omit private inventory evidence. Backend validation and escaped HTML output prevent submitted descriptions from being rendered as markup.
+One case contains independent `searchTasks`. Each has team name, kind, intended scope, sent/accepted/response timestamps, due time, note, found-item reference and escalation count. Team results are preserved independently. Every desk can inspect every synthetic case; the desk filter changes which task controls appear, not shared visibility.
 
-The synthetic demo intentionally has no accounts. The UI view selector is not a security boundary. The default localhost binding is part of its deployment scope.
+## Routing
 
-### Entities
+Two illustrative journeys are fixtures, not DB timetable data. Input station must occur on the chosen fixture. Recipients are the onboard team, stations after passenger exit and a destination cleaning/depot team. Station tasks check local inventory/handover desks; onboard and terminal tasks request train checks. No actual crew roster, message delivery or itinerary validation exists.
 
-Loss case: item description, journey fields, assigned demo team, search task status, acknowledgment deadline, case status, candidate reference, verification flag, custody records and audit events.
+An optional existing-report reference is stored as plain demo text. It is not verified or exchanged with DB. Unknown legacy routes receive an unconfirmed coordination task rather than a fabricated endpoint. Legacy stations found in a fixture gain explicitly illustrative tasks; no historical check is inferred.
 
-Found item: descriptive fields, journey label/date, storage location, private identifying detail and reservation reference.
+## Team transitions
 
-### State rules
+Pending → Accepted → Found / Checked — not found / Unable to check.
 
-Reported → Searching → Candidate review → Verified → Ready for collection → Returned.
+A response requires prior acceptance and a check description/reason. Found requires an available registered item of the case's category. A negative or unavailable response never closes a case. Found does not verify ownership or reserve the inventory item. Separate human candidate review and private-detail verification control reservation. Two cases cannot verify the same item. Collection requires a recorded handover.
 
-Searching can instead become Awaiting inventory after a negative search. Candidate rejection returns to Awaiting inventory. A negative check never closes the loss case. Reservation blocks two cases claiming the same item. A return requires verification plus a recorded accepted handover. Manual escalation applies only to overdue unacknowledged tasks.
+Overdue Pending or Accepted tasks can be manually escalated; the event is recorded and an illustrative 15-minute follow-up deadline is set. No background scheduler or outbound supervisor message exists.
 
-### Match score
+## Aggregate visibility
 
-Same category is required (+25). Same train label adds 40; same date 20; same colour 15. This is an illustrative ranking rule, not a calibrated probability. Date equality is intentionally simple and does not handle overnight/multi-day journeys. No machine learning is used.
+The case shows responded-task count, all individual outcomes, pending checks, recorded possible-item locations and ownership status. A station without a task on the remaining route can still inspect the shared case. Partial negatives and silence are never presented as permanent loss.
 
-## Proposed operator architecture
+Standard acknowledgment/response targets: 30/60 minutes. Urgent essentials: 15/30 minutes. These are demonstration settings, not operational commitments.
 
-Authenticated passenger and staff apps → tenant-scoped API → PostgreSQL with transactionally enforced reservations and custody events. A transactional outbox feeds notification and workflow workers. An approved journey adapter and operator roster drive routing. Operator-authorised inventory connectors reconcile reports and found records.
+## Ownership compatibility
 
-Production responsibilities:
+The old standalone acknowledgment/search-result/escalation API actions have been removed; team-specific actions now address a task ID. Found-item matching, verification and collection remain demonstrative compatibility flows for the final handoff. Production should reference operator inventory, not create a separate competing store.
 
-- Separate passenger access from staff roles; use operator SSO, least privilege and object-level access checks.
-- Model journey instances, service dates, rerouting, cancellations, staffing, shift changes and cross-operator ownership.
-- Create accepted search assignments with capacity limits and business-hours-aware deadlines.
-- Require independent sender/receiver acknowledgments for custody transfers.
-- Use idempotency keys and revision checks for actions; deduplicate inbound messages and retry notification delivery.
-- Verify ownership through operator-agreed evidence and authorised staff; do not expose private distinguishing details.
-- Define legal basis, controller/processor roles, retention, erasure, access auditing and incident response with the operator.
-- Encrypt storage and transit; redact telemetry; establish backup/restore and penetration testing.
-- Evaluate whether a DPIA is required for the actual processing; do not declare compliance solely from design choices.
-- Introduce automatic escalation only after staffing and targets are agreed.
+## Production architecture
 
-DB timetable API documentation indicates credentialed timetable access. It does not grant access to staff dispatch or lost-property inventory. No public operational integration is assumed.
+Authenticated passenger and staff applications → object-scoped API → transactional cases, team tasks and response records → outbox → notification and escalation workers. Confirm actual journey instances and team ownership with operator-approved adapters. Correlate the existing loss-report ID and inventory references.
 
-## Acceptance tests for a real pilot
+Required before a pilot with real data:
 
-Role isolation; no cross-passenger data leakage; disputed and double claims; overnight journeys; unavailable crews; changing endpoints; late finds; concurrent updates; duplicate events; offline handovers; notification retries; stale candidates; retention execution; tamper-resistant logging; restoration from backup.
+- Passenger access isolation and staff SSO; desk selector must become an authorised identity.
+- Need-to-know cross-station access, rather than unrestricted case visibility.
+- Current journey, stopping pattern, staff coverage, terminal/depot and rerouting confirmation.
+- Capacity-aware task routing, bounded recipients and explicit acceptance/rejection.
+- Delivery receipts and retries; creation is not delivery, delivery is not acceptance.
+- Authenticated evidence of check scope and outcome; revisions/reopens must preserve history.
+- Concurrent find/dispute handling and verified collection readiness.
+- Independent custody sender/receiver acknowledgments.
+- Operator-agreed urgent-item policy, service targets and alternative assistance.
+- Privacy roles/legal basis, retention/erasure, security review, incident response, backups and tamper-resistant logs.
+
+DB already uses NovaFind. Public documentation establishes matching/history/storage capabilities, not the exact deployment of this proposed early-search process. Integration feasibility and novelty remain unconfirmed.

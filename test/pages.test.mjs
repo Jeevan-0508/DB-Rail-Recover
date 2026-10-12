@@ -10,7 +10,10 @@ test('Pages build uses relative assets and browser workflow survives reload',asy
   try {
     const {browserApi}=await import('../dist/demo-api.js');
     const db=browserApi('/api/state');const route=`/api/cases/${db.cases[0].id}/actions`;
-    browserApi(route,{action:'acknowledge'});browserApi(route,{action:'match',itemId:'FI-DEMO-01'});
+    browserApi(route,{action:'team-ack',taskId:db.cases[0].searchTasks[0].id});
+    browserApi(route,{action:'team-response',taskId:db.cases[0].searchTasks[0].id,outcome:'Found',note:'Synthetic luggage check completed.',itemId:'FI-DEMO-01'});
+    assert.equal(browserApi('/api/state').cases[0].searchTasks[0].status,'Found');
+    browserApi(route,{action:'match',itemId:'FI-DEMO-01'});
     assert.equal(browserApi(route,{action:'verify',evidence:'wrong'}).verificationFailed,true);
     browserApi(route,{action:'verify',evidence:'Blue spiral notebook'});
     browserApi(route,{action:'handover',destination:'Demo office'});browserApi(route,{action:'return',confirm:true});
