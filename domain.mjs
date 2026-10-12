@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+const randomUUID = () => globalThis.crypto.randomUUID();
 
 export class DomainError extends Error {
   constructor(message, status = 400) { super(message); this.status = status; }

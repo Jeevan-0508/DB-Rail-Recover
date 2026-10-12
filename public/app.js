@@ -1,8 +1,11 @@
 const $=s=>document.querySelector(s);
+const pagesMode=location.hostname.endsWith('.github.io');
+let browserApi;
+if(pagesMode){({browserApi}=await import('./demo-api.js'));document.querySelector('.demo-banner').textContent='Independent prototype • Browser-only demo • Synthetic records • No DB connection';document.querySelector('.sidebar-bottom').innerHTML='<span class="pulse"></span> GitHub Pages demo<div>Saved only in this browser.</div><small>v0.2 · Simulated operations</small>';}
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let state,view='passenger',selected=null,pendingAction=null;
 const fmt=t=>new Date(t).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
-async function api(path,body) {const r=await fetch(path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw Error(data.error || 'Request failed.');return data;}
+async function api(path,body) {if(pagesMode)return browserApi(path,body);const r=await fetch(path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw Error(data.error || 'Request failed.');return data;}
 function notice(message,error=false){$('#notice').textContent=message;$('#notice').className=error?'error':'';}
 const badge=s=>`<span class="badge ${['Reported','Awaiting inventory','Candidate review'].includes(s)?'warn':s==='Returned'?'neutral':''}">${esc(s)}</span>`;
 function metrics(){return `<div class="metrics"><div class="metric"><span>OPEN REPORTS</span><strong>${state.cases.filter(c=>c.status!=='Returned').length.toString().padStart(2,'0')}</strong><small>Local demo records</small></div><div class="metric"><span>UNACKNOWLEDGED</span><strong>${state.cases.filter(c=>c.task==='Awaiting acknowledgment').length.toString().padStart(2,'0')}</strong><small>Awaiting a task owner</small></div><div class="metric"><span>OVERDUE TASKS</span><strong>${state.cases.filter(c=>c.task==='Awaiting acknowledgment'&&Date.parse(c.dueAt)<Date.now()).length.toString().padStart(2,'0')}</strong><small>30-minute demo deadline</small></div><div class="metric"><span>VERIFIED RETURNS</span><strong>${state.cases.filter(c=>c.status==='Returned').length.toString().padStart(2,'0')}</strong><small>Simulated collection only</small></div></div>`;}
