@@ -18,6 +18,8 @@
 
 </div>
 
+<p align="center"><a href="docs/getting-started.md">Getting started</a> · <a href="docs/quality-review.md">Quality review</a></p>
+
 ## The situation we want to change
 
 A passenger leaves a laptop bag on a train and reports it. At a station the next morning, they are told to wait at least three days and cannot obtain an answer about checks at other stations.
