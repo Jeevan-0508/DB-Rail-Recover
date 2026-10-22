@@ -38,9 +38,10 @@ $('#team-outcome').addEventListener('change',toggleFound);
 async function action(a,extra={}){const result=await api(`/api/cases/${selected}/actions`,{action:a,...extra});await refresh();notice(result.verificationFailed?'Ownership evidence did not match.':'Shared case updated (simulation).',result.verificationFailed);return result;}
 function show(id){const d=$('#'+id);d.querySelector('form').reset();d.querySelector('.form-error').textContent='';const date=d.querySelector('[name=date]');if(date)date.value=new Date().toISOString().slice(0,10);if(id==='report-dialog')routeOptions();d.showModal();}
 $('#content').addEventListener('change',async e=>{if(e.target.id==='desk-select'){desk=e.target.value;render();}if(e.target.id?.startsWith('insight-')){const filters={urgency:$('#insight-urgency').value,category:$('#insight-category').value,outcome:$('#insight-outcome').value};analytics=await api('/api/metrics?'+new URLSearchParams(filters));render();}});
+document.addEventListener('change',async e=>{if(!e.target.id?.startsWith('insight-')||!$('#global-insight-filters')?.contains(e.target))return;const filters={from:$('#insight-from').value?`${$('#insight-from').value}T00:00:00.000Z`:undefined,to:$('#insight-to').value?`${$('#insight-to').value}T23:59:59.999Z`:undefined,route:$('#insight-route').value,scenario:$('#insight-scenario').value};analytics=await api('/api/metrics?'+new URLSearchParams(Object.fromEntries(Object.entries(filters).filter(([,v])=>v))));render();});
 // desk selector is rendered inside the content in every operations view.
 document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;try{
- if(b.dataset.view){view=b.dataset.view;selected=null;if(view==='insights')await refresh();else render();}
+ if(b.dataset.view){view=b.dataset.view;selected=null;$('#global-insight-filters').hidden=view!=='insights';if(view==='insights')await refresh();else render();}
  else if(b.dataset.case){selected=b.dataset.case;render();}
  else if(b.hasAttribute('data-back')){selected=null;render();}
  else if(b.dataset.open)show(b.dataset.open);
