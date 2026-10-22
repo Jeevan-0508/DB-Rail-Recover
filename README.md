@@ -6,7 +6,7 @@
 
 **A route-based search coordination prototype: relevant railway teams respond, and every desk sees the same case.**
 
-[Open the live demo](https://Jeevan-0508.github.io/DB-Rail-Recover/) · [Case study](docs/CASE_STUDY.md) · [Operator pilot](docs/PILOT_PROPOSAL.md)
+[Open the live demo](https://Jeevan-0508.github.io/DB-Rail-Recover/) · [Case 001](docs/case-studies/CASE-001-THE-BAG-THAT-DISAPPEARED.md) · [Operator pilot](docs/PILOT_PROPOSAL.md)
 
 ![Tests and deployment](https://github.com/Jeevan-0508/DB-Rail-Recover/actions/workflows/pages.yml/badge.svg)
 ![Node 22+](https://img.shields.io/badge/Node-22%2B-174d40)
@@ -21,6 +21,8 @@
 <p align="center"><a href="docs/getting-started.md">Getting started</a> · <a href="docs/quality-review.md">Quality review</a></p>
 
 ## The situation we want to change
+
+The first documented case study is [CASE-001 — The Bag That Disappeared](docs/case-studies/CASE-001-THE-BAG-THAT-DISAPPEARED.md). It is anonymised, unresolved and explicit about the difference between passenger testimony and independently verified evidence.
 
 A passenger leaves a laptop bag on a train and reports it. At a station the next morning, they are told to wait at least three days and cannot obtain an answer about checks at other stations.
 
@@ -158,8 +160,14 @@ Start with DB InfraGO lost-property operations and DB Fernverkehr as proposed st
 
 ## Repository guide
 
-- [Case study and existing-system comparison](docs/CASE_STUDY.md)
+- [Case 001 — The Bag That Disappeared](docs/case-studies/CASE-001-THE-BAG-THAT-DISAPPEARED.md)
+- [Existing-system comparison](docs/CASE_STUDY.md)
 - [Coordination architecture and production requirements](docs/ARCHITECTURE.md)
+- [Product vision](docs/PRODUCT-VISION.md)
+- [Domain model](docs/DOMAIN-MODEL.md)
+- [Workflows](docs/WORKFLOWS.md)
+- [Security](docs/SECURITY.md) · [Privacy](docs/PRIVACY.md)
+- [Demo guide](docs/DEMO-GUIDE.md) · [Testing](docs/TESTING.md) · [Limitations](docs/LIMITATIONS.md)
 - [Pilot scope and evaluation](docs/PILOT_PROPOSAL.md)
 - [Domain and integration tests](test/)
 - [Deployment workflow](.github/workflows/pages.yml)
