@@ -2,7 +2,9 @@ import http from 'node:http';
 import { readFile, writeFile, mkdir, rename } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
-import { seed, createCase, registerItem, candidates, act, publicState, DomainError } from './domain.mjs';
+import { seed, createCase, registerItem, submitFeedback, candidates, act, publicState, DomainError } from './domain.mjs';
+import { calculateKpis } from './metrics.mjs';
+import { calculateFinancialModel, sensitivity } from './financial.mjs';
 
 const root=dirname(fileURLToPath(import.meta.url));
 const dataDir=process.env.RAILRECOVER_DATA_DIR || join(root,'data');
@@ -12,7 +14,7 @@ let db;
 try { db=JSON.parse(await readFile(dataFile,'utf8')); }
 catch(e) { if(e.code!=='ENOENT') throw e; db=seed(); await writeFile(dataFile,JSON.stringify(db,null,2)); }
 let queue=Promise.resolve();
-const files={'/':['index.html','text/html'],'/app.js':['app.js','text/javascript'],'/styles.css':['styles.css','text/css']};
+const files={'/':['index.html','text/html'],'/app.js':['app.js','text/javascript'],'/styles.css':['styles.css','text/css'],'/phase2.css':['phase2.css','text/css']};
 const port=Number(process.env.PORT || 3000);
 const host=process.env.HOST || '127.0.0.1';
 function send(res,status,value) {res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(value));}
@@ -27,6 +29,7 @@ const server=http.createServer(async(req,res)=> {
     const path=new URL(req.url,'http://localhost').pathname;
     if(req.method==='GET' && files[path]) {const [file,type]=files[path];res.writeHead(200,{'Content-Type':type+'; charset=utf-8'});res.end(await readFile(join(root,'public',file)));return;}
     if(req.method==='GET' && path==='/api/state') {send(res,200,publicState(db));return;}
+    if(req.method==='GET' && path==='/api/metrics') {const query=Object.fromEntries(new URL(req.url,'http://localhost').searchParams);send(res,200,calculateKpis(db,{filters:query}));return;}
     if(req.method==='GET' && /^\/api\/cases\/[^/]+\/candidates$/.test(path)) {
       const c=db.cases.find(c=>c.id===path.split('/')[3]);if(!c)throw new DomainError('Case not found.',404);send(res,200,candidates(db,c));return;
     }
@@ -39,6 +42,8 @@ const server=http.createServer(async(req,res)=> {
       const next=structuredClone(db);let result;
       if(path==='/api/cases') result=createCase(next,input);
       else if(path==='/api/items') result=registerItem(next,input);
+      else if(path==='/api/feedback') result=submitFeedback(next,input);
+      else if(path==='/api/financial') result={model:calculateFinancialModel(input),sensitivity:sensitivity(input)};
       else if(path==='/api/reset') {if(input.confirm!==true) throw new DomainError('Reset confirmation required.');Object.assign(next,seed());result={reset:true};}
       else if(/^\/api\/cases\/[^/]+\/actions$/.test(path)) {
         const c=next.cases.find(c=>c.id===path.split('/')[3]);if(!c)throw new DomainError('Case not found.',404);result=act(next,c,input.action,input);

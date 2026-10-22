@@ -168,6 +168,8 @@ Start with DB InfraGO lost-property operations and DB Fernverkehr as proposed st
 - [Workflows](docs/WORKFLOWS.md)
 - [Security](docs/SECURITY.md) · [Privacy](docs/PRIVACY.md)
 - [Demo guide](docs/DEMO-GUIDE.md) · [Testing](docs/TESTING.md) · [Limitations](docs/LIMITATIONS.md)
+- [Research & impact](docs/RESEARCH-AND-IMPACT.md) · [Metrics dictionary](docs/METRICS-DICTIONARY.md)
+- [Customer experience](docs/CUSTOMER-EXPERIENCE.md) · [Financial model](docs/FINANCIAL-MODEL.md) · [Pilot evaluation](docs/PILOT-EVALUATION.md)
 - [Pilot scope and evaluation](docs/PILOT_PROPOSAL.md)
 - [Domain and integration tests](test/)
 - [Deployment workflow](.github/workflows/pages.yml)

@@ -15,8 +15,10 @@ export function attachTasks(c,routeId){
  log(c,'Demo routing',`${recipients.length} relevant team tasks created locally. Journey is illustrative; no railway team was notified.`);
 }
 export function upgrade(db){
- db.schemaVersion=2;
+ db.schemaVersion=3; db.feedback ??= [];
+ for(const c of db.cases){c.createdAt ??= c.events?.map(e=>e.at).sort()[0] ?? now();c.scenario ??= 'legacy-demo';c.verifiedAt ??= null;c.recoveredAt ??= null;}
  for(const c of db.cases)if(!c.searchTasks){const r=routes.find(r=>r.stops.includes(c.station));if(r)attachTasks(c,r.id);else {c.routeStops=[];c.routeConfirmed=false;c.searchTasks=[{id:uuid(),name:'Demo coordination desk',kind:'Unconfirmed route',scope:'Confirm journey and team ownership before routing',status:'Pending',sentAt:now(),ackAt:null,responseAt:null,dueAt:new Date(Date.now()+30*60000).toISOString(),note:'',foundItemId:null,escalations:0}];}}
+ for(const c of db.cases)for(const t of c.searchTasks||[]){t.escalatedAt ??= null;}
  return db;
 }
 function sync(c){
@@ -31,7 +33,7 @@ export function teamAction(db,c,action,input){
   t.status='Accepted';t.ackAt=now();t.dueAt=new Date(Date.now()+(c.priority==='Urgent essentials'?30:60)*60000).toISOString();log(c,t.name,'Search request accepted (simulation); response pending.');
  }else if(action==='team-escalate'){
   if(!['Pending','Accepted'].includes(t.status)||Date.now()<Date.parse(t.dueAt))fail('Only an overdue pending or accepted task can be escalated.');
-  t.escalations++;t.dueAt=new Date(Date.now()+15*60000).toISOString();log(c,'Demo supervisor',`Overdue request for ${t.name} escalated. No external message sent.`);
+  t.escalations++;t.escalatedAt=now();t.dueAt=new Date(Date.now()+15*60000).toISOString();log(c,'Demo supervisor',`Overdue request for ${t.name} escalated. No external message sent.`);
  }else{
   if(t.status!=='Accepted')fail('Accept the task before recording a response.');
   if(!['Found','Checked — not found','Unable to check'].includes(input.outcome))fail('Choose a valid response.');
