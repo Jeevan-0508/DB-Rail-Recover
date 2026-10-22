@@ -1,0 +1,38 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {seed, createCase, registerItem, submitFeedback, act, publicState} from '../domain.mjs';
+import {calculateKpis} from '../metrics.mjs';
+import {calculateFinancialModel} from '../financial.mjs';
+
+test('release validation: urgent passenger report routes, escalates, recovers and reports feedback',()=>{
+  const db=seed();
+  const c=createCase(db,{category:'Bag',date:'2026-10-23',item:'Synthetic demo bag',color:'Graphite',description:'Synthetic orange tag',train:'ICE DEMO 701',station:'Nürnberg Hbf',routeId:'north',priority:'Urgent essentials',scenario:'found-handover'});
+  assert.equal(c.searchTasks.length,5);
+  assert.equal(c.searchTasks.filter(t=>t.status==='Pending').length,5);
+  const onboard=c.searchTasks[0];
+  act(db,c,'team-ack',{taskId:onboard.id});
+  assert.equal(c.status,'Searching');
+  act(db,c,'team-response',{taskId:onboard.id,outcome:'Checked — not found',note:'Synthetic coach and luggage-area check completed.'});
+  assert.equal(c.searchTasks.find(t=>t.id===onboard.id).status,'Checked — not found');
+  const overdue=c.searchTasks[1];act(db,c,'team-simulate-overdue',{taskId:overdue.id});
+  act(db,c,'team-escalate',{taskId:overdue.id});assert.equal(overdue.escalations,1);
+  act(db,c,'team-ack',{taskId:overdue.id});
+  const item=registerItem(db,{category:'Bag',color:'Graphite',train:'ICE DEMO 701',date:'2026-10-23',description:'Synthetic matching bag',location:'Nürnberg demo office',proof:'Blue spiral notebook'});
+  const station=c.searchTasks.find(t=>t.kind==='Station'&&t.id!==overdue.id);
+  act(db,c,'team-ack',{taskId:station.id});
+  act(db,c,'team-response',{taskId:station.id,outcome:'Found',note:'Synthetic inventory reviewed; possible match held.',itemId:item.id});
+  assert.equal(publicState(db).items.find(i=>i.id===item.id).proof,undefined);
+  act(db,c,'match',{itemId:item.id});
+  assert.equal(c.verified,false);
+  act(db,c,'verify',{evidence:'Blue spiral notebook'});
+  act(db,c,'handover',{destination:'Nürnberg demo collection desk'});
+  act(db,c,'return',{confirm:true});
+  assert.equal(c.status,'Returned');
+  submitFeedback(db,{caseId:c.id,csat:4,ces:2,communication:5,confidence:4,transparency:5,timing:'after-closure',comments:'Synthetic recovery feedback.'});
+  const kpis=calculateKpis(db,{filters:{route:'north',scenario:'found-handover',outcome:'Recovered'}});
+  assert.equal(kpis.eligibleCases,1);
+  assert.equal(kpis.metrics.recoveryRate.value,100);
+  assert.equal(kpis.metrics.csat.value,100);
+  assert.equal(kpis.metrics.surveyResponseRate.value,100);
+  assert.equal(calculateFinancialModel({annualCaseVolume:100,improvementPoints:10}).dataClass,'hypothetical business-case assumptions');
+});

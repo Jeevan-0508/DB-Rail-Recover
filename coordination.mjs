@@ -28,7 +28,11 @@ function sync(c){
 }
 export function teamAction(db,c,action,input){
  const t=c.searchTasks.find(t=>t.id===input.taskId);if(!t)fail('Search team not found.');
- if(action==='team-ack'){
+ if(action==='team-simulate-overdue'){
+  if(c.priority!=='Urgent essentials')fail('Synthetic overdue simulation is only available for urgent demo cases.');
+  if(!['Pending','Accepted'].includes(t.status))fail('Only a pending or accepted task can be made overdue.');
+  t.dueAt=new Date(Date.now()-1000).toISOString();log(c,'Demo clock',`Synthetic demo clock marked ${t.name} overdue. No real deadline changed.`);
+ }else if(action==='team-ack'){
   if(t.status!=='Pending')fail('Only a pending task can be accepted.');
   t.status='Accepted';t.ackAt=now();t.dueAt=new Date(Date.now()+(c.priority==='Urgent essentials'?30:60)*60000).toISOString();log(c,t.name,'Search request accepted (simulation); response pending.');
  }else if(action==='team-escalate'){
