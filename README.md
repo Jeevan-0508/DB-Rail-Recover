@@ -175,3 +175,15 @@ Start with DB InfraGO lost-property operations and DB Fernverkehr as proposed st
 - [Deployment workflow](.github/workflows/pages.yml)
 
 Built by **Jeevan** · [MIT licence](LICENSE) · Independent operational prototype.
+
+
+## What this project demonstrates
+
+- **Operational workflow design** — routes a single case to relevant teams, preserves independent responses, and keeps “pending”, “checked”, “found”, and “unable to check” distinct.
+- **Evidence and privacy boundaries** — separates passenger testimony from verified evidence, keeps private inventory details out of public read responses, and records actor/time/check scope.
+- **Product thinking under uncertainty** — makes silence visible, avoids treating one negative response as closure, and distinguishes a concept from DB policy or integration.
+- **Implementation discipline** — keeps browser and local-Node modes on shared domain rules with documented tests for routing, persistence, validation, ownership, escalation, and the built Pages adapter.
+
+## Maturity and boundaries
+
+RailRecover is an independently developed operational prototype using synthetic records. It is not affiliated with Deutsche Bahn, does not send tasks to railway teams, and has no production identity, notification, database, or operator access layer. The operator-pilot documents are proposed next steps, not evidence of adoption or endorsement. See [security](docs/SECURITY.md), [privacy](docs/PRIVACY.md), and [testing](docs/TESTING.md).
